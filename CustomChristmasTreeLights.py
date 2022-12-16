@@ -8,6 +8,8 @@ from machine import Pin, SPI
 
 # Define some parameters. These dictonaries include all of the lights ordered by x-position, y-position, and the last has each light's coordinates.
 
+lightAmount = 50
+
 rows = {0: (0, 24, 25), 1: (1, 23, 26, 49), 2: (2, 22, 27, 48), 3: (3, 21, 28, 47), 4: (4, 20, 29, 46), 5: (5, 19, 30, 45), 6: (6, 18, 43, 44), 7: (7, 16, 17, 31, 32, 42), 8: (8, 15, 33, 41), 9: (9, 13, 14, 34, 40), 10: (10, 35, 39), 11: (11, 12, 36, 37, 38)}
 cols = {0: (49, 48, 47, 46, 45, 37), 1: (44, 43, 42, 41, 40, 3, 5, 9, 11, 0, 38), 2: (1, 2, 4, 6, 7, 10, 39), 3: (8, 12, 13, 31, 32, 34, 35, 36), 4: (29, 30, 27, 26, 14), 5: (15, 18, 28, 33), 6: (16, 17, 19, 24, 25), 7: (20, 21, 22, 23)}
 coords = {0: (1, 0), 1: (2, 1), 2: (2, 2), 3: (1, 3), 4: (2, 4), 5: (1, 5), 6: (2, 6), 7: (2, 7), 8: (3, 8), 9: (1, 9), 10: (2, 10), 11: (1, 11), 12: (3, 11), 13: (3, 9), 14: (4, 9), 15: (5, 8), 16: (6, 7), 17: (6, 7), 18: (5, 6), 19: (6, 5), 20: (7, 4), 21: (7, 3), 22: (7, 2), 23: (7, 1), 24: (6, 0), 25: (6, 0), 26: (4, 1), 27: (4, 2), 28: (5, 3), 29: (4, 4), 30: (4, 5), 31: (3, 7), 32: (3, 7), 33: (5, 8), 34: (3, 9), 35: (3, 10), 36: (3, 11), 37: (0, 11), 38: (1, 11), 39: (2, 10), 40: (1, 9), 41: (1, 8), 42: (1, 7), 43: (1, 6), 44: (1, 6), 45: (0, 5), 46: (0, 4), 47: (0, 3), 48: (0, 2), 49: (0, 1)}
@@ -44,7 +46,7 @@ CLASSIC = (RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE)
 
 # Initialize strip of lights. 50 means I have 50 lights, 0 means something, 27 means pin 27 on my Rasberry Pi Pico, and "RGB" is RGB mode, of coursedar.
 
-pixels = Neopixel(50, 0, 28, "RGB")
+pixels = Neopixel(lightAmount, 0, 28, "RGB")
 pixels.brightness(10)
 
 spi = SPI(0, baudrate=10000000, polarity=1, phase=0, sck=Pin(2), mosi=Pin(3))
@@ -93,7 +95,7 @@ def fill(r, g, b):
 
 def chase(r, g, b, delay):
     pixel = 0
-    while pixel < 50:
+    while pixel < lightAmount:
         pix(pixel, r, g, b)
         pixel += 1
         sleep(delay)
@@ -200,14 +202,14 @@ def watertree():
     pixel = 0
     while True:
         pix(pixel, 0, 0, random.randint(10, 255))
-        if pixel < 47:
+        if pixel < lightAmount - 3:
             pixel += random.randint(2, 3)
         else:
             pixel = 0
             
 def classic(lighttype):
     light = 0
-    while light < 50:
+    while light < lightAmount:
         if lighttype == 'colors':
             color = CLASSIC[random.randint(0, 5)]
         elif lighttype == 'white':
@@ -226,4 +228,4 @@ clear()
 ##        v    PROGRAM THE SHOW HERE  v          ##
 ###################################################
 
-
+chase(255, 255, 255, .1)
