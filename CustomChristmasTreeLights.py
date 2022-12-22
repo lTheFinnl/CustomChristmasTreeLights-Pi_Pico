@@ -6,6 +6,7 @@ import random
 import max7219
 from machine import Pin, SPI
 
+
 # Define some parameters. These dictonaries include all of the lights ordered by x-position, y-position, and the last has each light's coordinates.
 
 lightAmount = 50
@@ -66,17 +67,21 @@ def displayprint(message, delay):
         display.fill(0)
         display.show()
         char += 1
+        
+def displayclear():
+    displayprint(' ', .001)
 
 def rpt(function, times):
     for i in range(times):
         function
         
 def fill(r, g, b):
-    strip.fill((r, g, b))
+    pixels.fill((r, g, b))
     pixels.show()
 
 def clear():
     pixels.clear()
+    pixels.show()
 
 def storepix(index):
     colors = states[index]
@@ -89,9 +94,6 @@ def pix(index, r, g, b):
     pixels.set_pixel(index, (r, g, b))
     pixels.show()
     states[index] = [r, g, b]
-    
-def fill(r, g, b):
-    pixels.fill(r, g, b)
 
 def chase(r, g, b, delay):
     pixel = 0
@@ -208,19 +210,22 @@ def watertree():
             pixel = 0
             
 def classic(lighttype):
-    light = 0
-    while light < lightAmount:
-        if lighttype == 'colors':
+    if lighttype == 'colors':
+        index = 0
+        while index < lightAmount:
             color = CLASSIC[random.randint(0, 5)]
-        elif lighttype == 'white':
-            color = (255, 255, 255)
-        elif lighttype == 'green':
-            color = (0, 255, 0)
-        elif lighttype == 'red':
-            color = (255, 0, 0)
-        pix(light, color[0], color[1], color[2])
-        light += 1
-        sleep(.001)
+            pix(index, color[0], color[1], color[2])
+            index += 1
+            sleep(.001)
+    elif lighttype == 'white':
+        color = (255, 255, 255)
+        fill(color[0], color[1], color[2])
+    elif lighttype == 'green':
+        color = (0, 255, 0)
+        fill(color[0], color[1], color[2])
+    elif lighttype == 'red':
+        color = (255, 0, 0)
+        fill(color[0], color[1], color[2])
 
 clear()
 
