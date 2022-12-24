@@ -11,9 +11,9 @@ from machine import Pin, SPI
 
 lightAmount = 50
 
-rows = {0: (0, 24, 25), 1: (1, 23, 26, 49), 2: (2, 22, 27, 48), 3: (3, 21, 28, 47), 4: (4, 20, 29, 46), 5: (5, 19, 30, 45), 6: (6, 18, 43, 44), 7: (7, 16, 17, 31, 32, 42), 8: (8, 15, 33, 41), 9: (9, 13, 14, 34, 40), 10: (10, 35, 39), 11: (11, 12, 36, 37, 38)}
-cols = {0: (49, 48, 47, 46, 45, 37), 1: (44, 43, 42, 41, 40, 3, 5, 9, 11, 0, 38), 2: (1, 2, 4, 6, 7, 10, 39), 3: (8, 12, 13, 31, 32, 34, 35, 36), 4: (29, 30, 27, 26, 14), 5: (15, 18, 28, 33), 6: (16, 17, 19, 24, 25), 7: (20, 21, 22, 23)}
-coords = {0: (1, 0), 1: (2, 1), 2: (2, 2), 3: (1, 3), 4: (2, 4), 5: (1, 5), 6: (2, 6), 7: (2, 7), 8: (3, 8), 9: (1, 9), 10: (2, 10), 11: (1, 11), 12: (3, 11), 13: (3, 9), 14: (4, 9), 15: (5, 8), 16: (6, 7), 17: (6, 7), 18: (5, 6), 19: (6, 5), 20: (7, 4), 21: (7, 3), 22: (7, 2), 23: (7, 1), 24: (6, 0), 25: (6, 0), 26: (4, 1), 27: (4, 2), 28: (5, 3), 29: (4, 4), 30: (4, 5), 31: (3, 7), 32: (3, 7), 33: (5, 8), 34: (3, 9), 35: (3, 10), 36: (3, 11), 37: (0, 11), 38: (1, 11), 39: (2, 10), 40: (1, 9), 41: (1, 8), 42: (1, 7), 43: (1, 6), 44: (1, 6), 45: (0, 5), 46: (0, 4), 47: (0, 3), 48: (0, 2), 49: (0, 1)}
+rows = {0: (0, 24, 25, 49, 23), 1: (1, 26, 48), 2: (47, 2, 27, 22), 3: (21, 28, 3, 46), 4: (45, 4, 29, 19, 20), 5: (44, 5, 30), 6: (43, 6, 18, 31), 7: (32, 42, 7, 17), 8: (8, 16, 33, 41), 9: (15, 34, 9, 40), 10: (14, 35, 39, 10), 11: (13, 30, 11, 38, 37, 36, 12)}
+cols = {0: (49, 48, 47, 46, 45), 1: (44, 43, 42), 2: (41, 40, 39), 3: (38, 10, 1, 3, 5, 7, 11), 4: (37, 9, 8, 6, 4, 2, 0), 5: (12, 36, 32, 30, 27, 35), 6: (13, 34, 33, 31, 29, 26), 7: (14, 15, 17, 25, 18, 28), 8: (24, 22, 19, 16), 9: (20, 21, 23)}
+coords = {0: (4, 0), 1: (3, 1), 2: (4, 2), 3: (3, 3), 4: (4, 4), 5: (3, 5), 6: (4, 6), 7: (3, 7), 8: (4, 8), 9: (4, 9), 10: (3, 10), 11: (3, 11), 12: (5, 11), 13: (6, 11), 14: (7, 10), 15: (7, 9), 16: (8, 8), 17: (7, 7), 18: (7, 6), 19: (8, 4), 20: (9, 4), 21: (9, 3), 22: (8, 2), 23: (9, 0), 24: (8, 0), 25: (7, 0), 26: (6, 1), 27: (5, 2), 28: (7, 3), 29: (6, 4), 30: (5, 5), 31: (6, 6), 32: (5, 7), 33: (6, 8), 34: (6, 9), 35: (5, 10), 36: (5, 11), 37: (4, 11), 38: (3, 11), 39: (2, 10), 40: (2, 9), 41: (2, 8), 42: (1, 7), 43: (1, 6), 44: (1, 5), 45: (0, 4), 46: (0, 3), 47: (0, 2), 48: (0, 1), 49: (0, 0)}
 
 keys = (coords.keys())
 vals = (coords.values())
@@ -56,6 +56,11 @@ display = max7219.Matrix8x8(spi, ss, 1)
 
 # Define basic commands that can be used to make the lights do stuff.
 
+def coordkeyget(value):
+    for k, v in coords.items():
+        if value == v:
+            return k
+
 def displayprint(message, delay):
     display.fill(0)
     length = len(message)
@@ -94,6 +99,26 @@ def pix(index, r, g, b):
     pixels.set_pixel(index, (r, g, b))
     pixels.show()
     states[index] = [r, g, b]
+    
+def pixcoord(x, y, r, g, b):
+    for pixel in coords:
+        coordinates = coords.get(pixel)
+        if coordinates[0] == x and coordinates[1] == y:
+            pix(pixel, r, g, b)
+            
+def pixregion(x1, y1, x2, y2, r, g, b):
+    width = x2 - x1 + 1
+    height = y2 - y1 + 1
+    print((width, height))
+    pixels = []
+    x = x1
+    y = y1
+    while y <= y2:
+        while x <= x2:
+            pixcoord(x, y, r, g, b)
+            x += 1
+        x = x1
+        y += 1
 
 def chase(r, g, b, delay):
     pixel = 0
@@ -104,53 +129,58 @@ def chase(r, g, b, delay):
         pixels.clear()
 
 def setrow(row, r, g, b):
-    for index in rows[row]:
-        pix(index, r, g, b)
-        
+    for coord in coords.values():
+        if coord[1] == row:
+            index = coordkeyget(coord)
+            pix(index, r, g, b)
+
 def setcol(col, r, g, b):
-    for index in cols[col]:
-        pix(index, r, g, b)
+    for coord in coords.values():
+        if coord[0] == col:
+            index = coordkeyget(coord)
+            pix(index, r, g, b)
 
 def scan(direction, delay, r, g, b):
     if direction == 'up':
-        row = -1
-        while row < 11:
+        row = 0
+        while row <= 11:
+            setrow(row, r, g, b)
+            sleep(delay)
+            clear()
             row += 1
-            clear()
-            setrow(row, r, g, b)
-            sleep(delay)
     elif direction == 'down':
-        row = 12
-        while row > 0:
-            row -= 1
-            clear()
+        row = 11
+        while row >= 0:
             setrow(row, r, g, b)
             sleep(delay)
+            clear()
+            row -= 1
     elif direction == 'right':
         col = 0
-        while col < 7:
+        while col <= 9:
+            setcol(col, r, g, b)
+            sleep(delay)
+            clear()
             col += 1
-            clear()
-            setcol(col, r, g, b)
-            sleep(delay)
     elif direction == 'left':
-        col = 8
-        while col > 0:
-            col -= 1
-            clear()
+        col = 9
+        while col >= 0:
             setcol(col, r, g, b)
             sleep(delay)
+            clear()
+            col -= 1
+
     sleep(delay)
     clear()
 
 def getlight(x, y):
-    for light in cols[x]:
-        if light in rows[y]:
-            return light
+    coordinate = (x, y)
+    light = coordkeyget(coordinate)
+    return light
 
 def fallingparticle(particletype, starty, endy):
     if particletype == 'snow':
-        xpos = random.randint(0, 7)
+        xpos = random.randint(0, 9)
         ypos = starty
         prevlight = storepix(0)
         while ypos > endy:
@@ -177,7 +207,7 @@ def snow(intensity, fill, layersize):
             sleep(1/intensity)
             fallingparticle('snow', 11, 0)
         elif fill == True:
-            while layers < 11:
+            while layers <= 11:
                 while fallenflakes < layersize:
                     sleep(1/intensity)
                     fallingparticle('snow', 11, layers)
@@ -226,11 +256,36 @@ def classic(lighttype):
     elif lighttype == 'red':
         color = (255, 0, 0)
         fill(color[0], color[1], color[2])
+        
+def graphline(thickness, m, b, r, g, bl):
+    for index in coords:
+        coord = coords[index]
+        x = coord[0]
+        y = coord[1]
+        if (x * m) + b == y:
+            pix(index, r, g, bl)
+            sleep(.001)
+        elif abs(((x * m) + b) - y) < thickness:
+            pix(index, r, g, bl)
+            sleep(.01)
+    displayprint('y={}x+{}'.format(m, b), .5)
+            
+def graphparabola(thickness, a, h, k, r, g, b):
+    for index in coords:
+        coord = coords[index]
+        x = coord[0]
+        y = coord[1]
+        if a * (x - h)**2 + k == y:
+            pix(index, r, g, b)
+            sleep(.001)
+        elif abs((a * (x - h)**2 + k) - y) < thickness:
+            pix(index, r, g, b)
+            sleep(.01)
+    displayprint('y={}(x-{})^2+{}'.format(a, h, k), .5)
 
 clear()
+displayclear()
 
-###################################################
-##        v    PROGRAM THE SHOW HERE  v          ##
 ###################################################
 
 
